@@ -126,12 +126,19 @@ python demo_vis_hand.py --input ./demo_output_hand --side_by_side
 
 ## Pretrained models
 
-Two self-contained inference sets are released, both available from a single [polybox folder](https://polybox.ethz.ch/index.php/s/LHz64M2YnRo3CpL) (each set is a subfolder). Each contains the main model plus the five detokenizers (`reviv_main.pth`, `reviv_tok_{body,cam,gaze,lhand,rhand}.pth`) and a `norm_stats/` subfolder with the matching mean/std sidecars — point `REVIV_CKPT_ROOT` (or `--ckpt_root`) at one set and both demos work out of the box:
+Two self-contained inference sets are released, both available from the Hugging Face repository [SeanLyu/reviv](https://huggingface.co/SeanLyu/reviv) (each set is a subfolder). Each contains the main model plus the five detokenizers (`reviv_main.pth`, `reviv_tok_{body,cam,gaze,lhand,rhand}.pth`) and a `norm_stats/` subfolder with the matching mean/std sidecars — point `REVIV_CKPT_ROOT` (or `--ckpt_root`) at one set and both demos work out of the box:
 
 | Checkpoint set | Input | Predicts | Weights |
 |---|---|---|---|
-| `metric_depth/` | 32-frame 512×512 clip @ 16 fps (Cosmos DV8x16x16) | **metric 512×512 depth**, camera, gaze, body, hands | [Download](https://polybox.ethz.ch/index.php/s/LHz64M2YnRo3CpL) |
-| `reviv_500b/` | 16-frame 256×256 clip @ 8 fps (Cosmos DV4x8x8) + raw clip | relative 256×256 depth, camera, gaze, body, hands | [Download](https://polybox.ethz.ch/index.php/s/LHz64M2YnRo3CpL) |
+| `metric_depth/` | 32-frame 512×512 clip @ 16 fps (Cosmos DV8x16x16) | **metric 512×512 depth**, camera, gaze, body, hands | [Download](https://huggingface.co/SeanLyu/reviv/tree/main/metric_depth) |
+| `reviv_500b/` | 16-frame 256×256 clip @ 8 fps (Cosmos DV4x8x8) + raw clip | relative 256×256 depth, camera, gaze, body, hands | [Download](https://huggingface.co/SeanLyu/reviv/tree/main/reviv_500b) |
+
+To download a set from the command line (`huggingface-cli` ships with the `huggingface_hub` pinned in `environment.yaml`):
+
+```bash
+huggingface-cli download SeanLyu/reviv --include "metric_depth/*" --local-dir reviv_checkpoints
+export REVIV_CKPT_ROOT=reviv_checkpoints/metric_depth
+```
 
 Detokenizers and norm stats must come from the same set as the main checkpoint they were trained with; codebook sizes differ between sets and are read from the main checkpoint automatically at load time, so no flags are needed when switching sets. Depth is detokenized with the NVIDIA Cosmos decoder (downloaded separately, see [Inference](#inference)).
 
